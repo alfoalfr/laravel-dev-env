@@ -150,8 +150,7 @@ return [
          */
         LucaDegasperi\OAuth2Server\Storage\FluentStorageServiceProvider::class,
         LucaDegasperi\OAuth2Server\OAuth2ServerServiceProvider::class,
-        Prettus\Repository\Providers\RepositoryServiceProvider::class,
-
+        Laravel\Socialite\SocialiteServiceProvider::class,
     ],
 
     /*
@@ -205,6 +204,7 @@ return [
          * Third Part Alias
          */
         'Authorizer' => LucaDegasperi\OAuth2Server\Facades\Authorizer::class,
+        'Socialite' => Laravel\Socialite\Facades\Socialite::class,
     ],
 
 ];

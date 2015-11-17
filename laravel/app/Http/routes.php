@@ -21,3 +21,8 @@ Route::get('/', function () {
 Route::post('oauth/access_token', function() {
     return response()->json(Authorizer::issueAccessToken());
 });
+
+//Laravel Socialite Login and Register Routes
+Route::get('service/{providerName}/login', 'ServiceAuthController@redirectToProvider');
+Route::get('service/{providerName}/data', 'ServiceAuthController@handleProviderData');
+Route::post('service/save', 'ServiceAuthController@saveProviderData');
