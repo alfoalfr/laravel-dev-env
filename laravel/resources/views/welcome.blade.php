@@ -42,31 +42,44 @@
             </div>
         </div>
 
-        <a id="providerLogin" href="{{url('service/facebook/login')}}">Facebook Login</a>
+        <a class="providerLogin" href="{{url('service/facebook/login')}}">Facebook Login</a>
+
+        <a class="providerLogin" href="{{url('service/google/login')}}">Gmail login</a>
+
+        <a class="providerLogin" href="{{url('service/github/login')}}">GitHub login</a>
 
         <script>
-            document.getElementById('providerLogin').onclick =
-            function fbclick(e) {
-                e.preventDefault();
-                window.open(this.getAttribute('href'), 'LoginWithFacebook', 'width=978,height=672');
-            };
+            lista = document.getElementsByClassName('providerLogin');
+            for(i = 0; i < lista.length; i++){
+                lista[i].onclick =
+                    function fbclick(e) {
+                        e.preventDefault();
+                        window.open(
+                                this.getAttribute('href'),
+                                'LoginWithFacebook',
+                                'width=1100,height=720,top='+((screen.height/2)-(360))+',left='+((screen.width/2)-(550))
+                        );
+                    };
+            }
 
             function facebookResponse(user){
-                console.log(user);
-
-                var xhttp = new XMLHttpRequest();
-                xhttp.onreadystatechange = function() {
-                    if (xhttp.readyState == 4) {
-                        if (xhttp.status == 200) {
-                            console.log(xhttp.responseText);
-                        } else {
-                            console.log('error');
+                if (user != null){
+                    var xhttp = new XMLHttpRequest();
+                    xhttp.onreadystatechange = function() {
+                        if (xhttp.readyState == 4) {
+                            if (xhttp.status == 200) {
+                                console.log(xhttp.responseText);
+                            } else {
+                                console.log('error');
+                            }
                         }
-                    }
-                };
-                xhttp.open("POST", "{{url('service/save')}}", true);
-                xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-                xhttp.send("user="+user);
+                    };
+                    xhttp.open("POST", "{{url('service/save')}}", true);
+                    xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+                    xhttp.send("user="+user);
+                }else{
+                    console.log('error');
+                }
             }
         </script>
     </body>

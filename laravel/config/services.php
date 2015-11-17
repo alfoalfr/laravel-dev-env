@@ -40,4 +40,16 @@ return [
         'client_secret' => env('FACEBOOK_SECRET'),
         'redirect' => env('BASE_URL').('service/facebook/data'),
     ],
+
+    'google' => [
+        'client_id' => env('GOOGLE_KEY'),
+        'client_secret' => env('GOOGLE_SECRET'),
+        'redirect' => env('BASE_URL').('service/google/data'),
+    ],
+
+    'github' => [
+        'client_id' => env('GITHUB_KEY'),
+        'client_secret' => env('GITHUB_SECRET'),
+        'redirect' => env('BASE_URL').('service/github/data'),
+    ],
 ];

@@ -9,7 +9,7 @@
     @if(isset($user))
         window.opener.facebookResponse({!!json_encode($user)!!});
     @else()
-        window.opener.facebookResponse();
+        window.opener.facebookInfo();
     @endif
     window.close();
 </script>

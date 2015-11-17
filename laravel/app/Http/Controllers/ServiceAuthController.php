@@ -62,11 +62,11 @@ class ServiceAuthController extends Controller
     public function saveProviderData()
     {
         $data = request()->get('user');
-        $userData = get_object_vars(json_decode($data));
+        $userData = json_decode($data);
 
-        $user = $this->user->verifyUserExistanceByEmail($userData['email']);
+        $user = $this->user->verifyUserExistanceByEmail($userData->email);
         if ($user !== false){
-            if(count($user->thirdPartyLogins()->where('service_name', '=', $userData['providerName'])) == 0){
+            if(count($user->thirdPartyLogins()->where('service_name', '=', $userData->providerName)->get()) == 0){
                 $this->associateProviderWithUser($user, $userData);
             }
         }else{
@@ -75,15 +75,14 @@ class ServiceAuthController extends Controller
 
         return response()->json([
             'success' => true,
-            'user' => $data
         ]);
     }
 
     public function signUpWithProviderData($data){
         $user = $this->user->create([
-            'name' => $data['name'],
-            'email' => $data['email'],
-            'foto' =>$data['avatar'],
+            'name' => $data->name,
+            'email' => $data->email,
+            'foto' =>$data->avatar,
         ]);
 
         $this->associateProviderWithUser($user, $data);
@@ -91,9 +90,9 @@ class ServiceAuthController extends Controller
 
     public function associateProviderWithUser($user, $data){
         $thirdPartyLogin = $this->thirdPartyLogins->create([
-            'service_name' => $data['providerName'],
-            'service_id' => $data['id'],
-            'service_token' => $data['token'],
+            'service_name' => $data->providerName,
+            'service_id' => $data->id,
+            'service_token' => $data->token,
         ]);
 
         $user->ThirdPartyLogins()->save($thirdPartyLogin);
