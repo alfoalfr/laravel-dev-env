@@ -4,7 +4,7 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
-class ThirdPartyLogins extends Model
+class ThirdPartyLogin extends Model
 {
 
     /**

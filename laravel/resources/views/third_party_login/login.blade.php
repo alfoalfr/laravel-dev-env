@@ -5,16 +5,16 @@
     <title>{{$providerName}} Login</title>
 </head>
 <body>
-<script>
-    window.opener.facebookResponse(
-            '{!!$providerName!!}',
-            '{!!$authToken!!}',
-            '{!!$clientId!!}',
-            '{!!$clientSecret!!}',
-            '{!!$message!!}',
-            '{!!$success!!}'
-    );
-    window.close();
-</script>
+<div id="data"
+     data-url='{{url('service/login')}}'
+     data-provider='{!!$providerName!!}'
+     data-token='{!!$authToken!!}'
+     data-client-id='{!!$clientId!!}'
+     data-client-secret='{!!$clientSecret!!}'
+     data-message='{!!$message!!}'
+     data-success='{!!$success!!}'>
+</div>
+
+<script type="text/javascript" src="{!!asset('build/js/third-party-login/loginPopup.js')!!}"></script>
 </body>
 </html>

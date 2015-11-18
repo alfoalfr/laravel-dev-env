@@ -50,8 +50,8 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
     /*
      * Relatioships
      */
-    public function thirdPartyLogins()
+    public function thirdPartyLogin()
     {
-        return $this->hasMany(ThirdPartyLogins::class);
+        return $this->hasMany(ThirdPartyLogin::class);
     }
 }

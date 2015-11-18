@@ -11,7 +11,7 @@
 
 namespace App\GrantTypes;
 
-use App\ThirdPartyLogins;
+use App\ThirdPartyLogin;
 use App\User;
 use League\OAuth2\Server\Entity\AccessTokenEntity;
 use League\OAuth2\Server\Entity\ClientEntity;
@@ -55,8 +55,8 @@ class ThirdPartyLoginGrant extends AbstractGrant
      * @return User
      */
     private function getUserByProviderToken($providerName, $token){
-        $thirdPartyLogins = new ThirdPartyLogins();
-        return $thirdPartyLogins->getUserByProviderToken($providerName, $token);
+        $thirdPartyLogin = new ThirdPartyLogin();
+        return $thirdPartyLogin->getUserByProviderToken($providerName, $token);
     }
 
     /**

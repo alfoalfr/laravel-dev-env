@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests;
 use App\OAuthClient;
-use App\ThirdPartyLogins;
+use App\ThirdPartyLogin;
 use App\User;
 use Illuminate\Support\Facades\Response;
 use Laravel\Socialite\Facades\Socialite;
@@ -17,14 +17,14 @@ class ServiceAuthController extends Controller
      */
     protected $user;
     /**
-     * @var ThirdPartyLogins
+     * @var ThirdPartyLogin
      */
-    protected $thirdPartyLogins;
+    protected $thirdPartyLogin;
 
-    public function __construct(User $user, ThirdPartyLogins $thirdPartyLogins)
+    public function __construct(User $user, ThirdPartyLogin $thirdPartyLogin)
     {
         $this->user = $user;
-        $this->thirdPartyLogins = $thirdPartyLogins;
+        $this->thirdPartyLogin = $thirdPartyLogin;
     }
 
     /**
@@ -89,16 +89,16 @@ class ServiceAuthController extends Controller
     }
 
     public function createProviderAndAssociateWithUser($user, $data, $providerName){
-        $providerData = $user->thirdPartyLogins()->where('service_name', '=', $providerName)->first();
+        $providerData = $user->thirdPartyLogin()->where('service_name', '=', $providerName)->first();
 
         if ($providerData === null){
-            $thirdPartyLogin = $this->thirdPartyLogins->create([
+            $thirdPartyLogin = $this->thirdPartyLogin->create([
                 'service_name' => $providerName,
                 'service_id' => $data->id,
                 'service_token' => $data->token,
             ]);
 
-            $user->ThirdPartyLogins()->save($thirdPartyLogin);
+            $user->ThirdPartyLogin()->save($thirdPartyLogin);
         }else{
             $providerData->service_token = $data->token;
             $providerData->save();

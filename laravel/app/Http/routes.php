@@ -18,6 +18,12 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+//User Routes
+
+Route::get('user/info', ['middleware' => 'oauth', function(){
+    return Authorizer::getResourceOwnerId();
+}]);
+
 //Laravel Socialite Login, Data and Login Routes
 Route::get('service/{providerName}/login', 'ServiceAuthController@redirectToProvider');
 Route::get('service/{providerName}/data', 'ServiceAuthController@handleProviderData');

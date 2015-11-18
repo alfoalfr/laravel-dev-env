@@ -2,7 +2,6 @@
 <html>
     <head>
         <title>Laravel</title>
-
         <link href="https://fonts.googleapis.com/css?family=Lato:100" rel="stylesheet" type="text/css">
 
         <style>
@@ -42,52 +41,25 @@
             </div>
         </div>
 
-        <button class="providerLogin" data-url="{{url('')}}" data-provider="facebook">Facebook Login</button>
+        <button class="providerLogin" data-url="{{url('')}}" data-provider="facebook" data-callback="showUserInfo">Facebook Login</button>
 
-        <button class="providerLogin" data-url="{{url('')}}" data-provider="google">Gmail login</button>
+        <button class="providerLogin" data-url="{{url('')}}" data-provider="google" data-callback="showUserInfo">Gmail login</button>
 
-        <button class="providerLogin" data-url="{{url('')}}" data-provider="github">GitHub login</button>
+        <button class="providerLogin" data-url="{{url('')}}" data-provider="github" data-callback="showUserInfo">GitHub login</button>
+
+        <div id="personalInfo">
+            <img id="personalFoto" src="" alt="">
+            <h2 id="personalName"></h2>
+        </div>
+
 
         <script>
-            lista = document.getElementsByClassName('providerLogin');
-            for(i = 0; i < lista.length; i++){
-                lista[i].onclick =
-                    function fbclick(e) {
-                        e.preventDefault();
-                        providerName = this.getAttribute('data-provider');
-                        window.open(
-                                this.getAttribute('data-url')+'/service/'+providerName+'/login',
-                                'Login com '+providerName,
-                                'width=1100,height=720,top='+((screen.height/2)-(360))+',left='+((screen.width/2)-(550))
-                        );
-                    };
-            }
-
-            function facebookResponse(providerName, authToken, clientId, clientSecret, message, success){
-                if (success == true){
-                    var xhttp = new XMLHttpRequest();
-                    xhttp.onreadystatechange = function() {
-                        if (xhttp.readyState == 4) {
-                            if (xhttp.status == 200) {
-                                console.log(xhttp.responseText);
-                            } else {
-                                console.log("Erro: Não foi possivel se conectar com o servidor.");
-                            }
-                        }
-                    };
-                    xhttp.open("POST", "{{url('service/login')}}", true);
-                    xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-                    xhttp.send(
-                            "grant_type=third_party_login&"+
-                            "client_id="+clientId+"&"+
-                            "client_secret="+clientSecret+"&"+
-                            "provider_name="+providerName+"&"+
-                            "provider_token="+authToken
-                    );
-                }else{
-                    console.log("message: "+message);
-                }
+            function showUserInfo(success, token){
+                console.log(success);
+                console.log(token);
             }
         </script>
+
+        <script type="text/javascript" src="{!!asset('build/js/third-party-login/loginMain.js')!!}"></script>
     </body>
 </html>
