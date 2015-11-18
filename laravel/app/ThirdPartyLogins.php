@@ -28,11 +28,18 @@ class ThirdPartyLogins extends Model
      *
      * @var array
      */
-    protected $hidden = ['password', 'remember_token'];
+    protected $hidden = [];
 
+    public function getUserByProviderToken($providerName, $token){
+        $provider = $this->where('service_name', '=', $providerName)->where('service_token', '=', $token)->first();
+        if($provider != null){
+            return $provider->user;
+        }
+        return false;
+    }
 
-    public function Users()
+    public function user()
     {
-        return $this->belongsToMany(Users::class);
+        return $this->belongsTo(User::class);
     }
 }

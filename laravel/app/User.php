@@ -52,6 +52,6 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
      */
     public function thirdPartyLogins()
     {
-        return $this->belongsToMany(ThirdPartyLogins::class);
+        return $this->hasMany(ThirdPartyLogins::class);
     }
 }

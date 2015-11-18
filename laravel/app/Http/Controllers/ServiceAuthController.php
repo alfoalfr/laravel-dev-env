@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests;
+use App\OAuthClient;
 use App\ThirdPartyLogins;
 use App\User;
 use Illuminate\Support\Facades\Response;
@@ -45,56 +46,62 @@ class ServiceAuthController extends Controller
     {
         try {
             $providerUser = Socialite::driver($providerName)->user();
-            $providerUser->providerName = $providerName;
 
-            return view('third_party_login.login')->with([
-                "providerName" => $providerName,
-                "user" => json_encode($providerUser),
-            ]);
-        } catch (\Exception $e) {
-            return response()->json([
-                "providerName" => $providerName,
-                'success' => false,
-            ]);
-        }
-    }
-
-    public function saveProviderData()
-    {
-        $data = request()->get('user');
-        $userData = json_decode($data);
-
-        $user = $this->user->verifyUserExistanceByEmail($userData->email);
-        if ($user !== false){
-            if(count($user->thirdPartyLogins()->where('service_name', '=', $userData->providerName)->get()) == 0){
-                $this->associateProviderWithUser($user, $userData);
+            $user = $this->user->verifyUserExistanceByEmail($providerUser->email);
+            if ($user === false){
+                $user = $this->createUserFromProviderData($providerUser);
             }
-        }else{
-            $this->signUpWithProviderData($userData);
-        }
+            if ($user !== null){
+                $this->createProviderAndAssociateWithUser($user, $providerUser, $providerName);
+            }
+
+            $oAuthClient = new OAuthClient();
+            $oAuthClientInfo = $oAuthClient->getClientInfoByName(OAuthClient::THIRD_PARTY_CLIENT);
+
+            if ($oAuthClientInfo !== false){
+                return view('third_party_login.login')->with([
+                    "providerName" => $providerName,
+                    "authToken" => $providerUser->token,
+                    "clientId" => $oAuthClientInfo->id,
+                    "clientSecret" => $oAuthClientInfo->secret,
+                    "message" => null,
+                    'success' => true,
+                ]);
+            }
+        } catch (\Exception $e) {}
 
         return response()->json([
-            'success' => true,
+            "providerName" => $providerName,
+            "authToken" => null,
+            "clientId" => null,
+            "clientSecret" => null,
+            "message" => "Erro: Não foi possivel logar com seu ".$providerName.'.',
+            'success' => false,
         ]);
     }
 
-    public function signUpWithProviderData($data){
-        $user = $this->user->create([
+    public function createUserFromProviderData($data){
+        return $this->user->create([
             'name' => $data->name,
             'email' => $data->email,
             'foto' =>$data->avatar,
         ]);
-
-        $this->associateProviderWithUser($user, $data);
     }
 
-    public function associateProviderWithUser($user, $data){
-        $thirdPartyLogin = $this->thirdPartyLogins->create([
-            'service_name' => $data->providerName,
-            'service_id' => $data->id,
-            'service_token' => $data->token,
-        ]);
+    public function createProviderAndAssociateWithUser($user, $data, $providerName){
+        $providerData = $user->thirdPartyLogins()->where('service_name', '=', $providerName)->first();
 
-        $user->ThirdPartyLogins()->save($thirdPartyLogin);
+        if ($providerData === null){
+            $thirdPartyLogin = $this->thirdPartyLogins->create([
+                'service_name' => $providerName,
+                'service_id' => $data->id,
+                'service_token' => $data->token,
+            ]);
+
+            $user->ThirdPartyLogins()->save($thirdPartyLogin);
+        }else{
+            $providerData->service_token = $data->token;
+            $providerData->save();
+        }
     }
 }

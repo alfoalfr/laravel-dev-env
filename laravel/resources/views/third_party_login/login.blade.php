@@ -6,11 +6,14 @@
 </head>
 <body>
 <script>
-    @if(isset($user))
-        window.opener.facebookResponse({!!json_encode($user)!!});
-    @else()
-        window.opener.facebookInfo();
-    @endif
+    window.opener.facebookResponse(
+            '{!!$providerName!!}',
+            '{!!$authToken!!}',
+            '{!!$clientId!!}',
+            '{!!$clientSecret!!}',
+            '{!!$message!!}',
+            '{!!$success!!}'
+    );
     window.close();
 </script>
 </body>

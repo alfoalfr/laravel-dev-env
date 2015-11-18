@@ -42,11 +42,11 @@
             </div>
         </div>
 
-        <a class="providerLogin" href="{{url('service/facebook/login')}}">Facebook Login</a>
+        <button class="providerLogin" data-url="{{url('')}}" data-provider="facebook">Facebook Login</button>
 
-        <a class="providerLogin" href="{{url('service/google/login')}}">Gmail login</a>
+        <button class="providerLogin" data-url="{{url('')}}" data-provider="google">Gmail login</button>
 
-        <a class="providerLogin" href="{{url('service/github/login')}}">GitHub login</a>
+        <button class="providerLogin" data-url="{{url('')}}" data-provider="github">GitHub login</button>
 
         <script>
             lista = document.getElementsByClassName('providerLogin');
@@ -54,31 +54,38 @@
                 lista[i].onclick =
                     function fbclick(e) {
                         e.preventDefault();
+                        providerName = this.getAttribute('data-provider');
                         window.open(
-                                this.getAttribute('href'),
-                                'LoginWithFacebook',
+                                this.getAttribute('data-url')+'/service/'+providerName+'/login',
+                                'Login com '+providerName,
                                 'width=1100,height=720,top='+((screen.height/2)-(360))+',left='+((screen.width/2)-(550))
                         );
                     };
             }
 
-            function facebookResponse(user){
-                if (user != null){
+            function facebookResponse(providerName, authToken, clientId, clientSecret, message, success){
+                if (success == true){
                     var xhttp = new XMLHttpRequest();
                     xhttp.onreadystatechange = function() {
                         if (xhttp.readyState == 4) {
                             if (xhttp.status == 200) {
                                 console.log(xhttp.responseText);
                             } else {
-                                console.log('error');
+                                console.log("Erro: Não foi possivel se conectar com o servidor.");
                             }
                         }
                     };
-                    xhttp.open("POST", "{{url('service/save')}}", true);
+                    xhttp.open("POST", "{{url('service/login')}}", true);
                     xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-                    xhttp.send("user="+user);
+                    xhttp.send(
+                            "grant_type=third_party_login&"+
+                            "client_id="+clientId+"&"+
+                            "client_secret="+clientSecret+"&"+
+                            "provider_name="+providerName+"&"+
+                            "provider_token="+authToken
+                    );
                 }else{
-                    console.log('error');
+                    console.log("message: "+message);
                 }
             }
         </script>
