@@ -18,6 +18,11 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+Route::get('/test-oauth', function () {
+    return view('test.integracaoOAuth');
+});
+
+
 //User Routes
 
 Route::get('user/info', ['middleware' => 'oauth', function(){
