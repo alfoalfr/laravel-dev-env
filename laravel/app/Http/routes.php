@@ -24,7 +24,6 @@ Route::get('/test-oauth', function () {
 
 
 //User Routes
-
 Route::get('user/info', ['middleware' => 'oauth', function(){
     return Authorizer::getResourceOwnerId();
 }]);
@@ -32,10 +31,16 @@ Route::get('user/info', ['middleware' => 'oauth', function(){
 //Laravel Socialite Login, Data and Login Routes
 Route::get('service/{providerName}/login', 'ServiceAuthController@redirectToProvider');
 Route::get('service/{providerName}/data', 'ServiceAuthController@handleProviderData');
+
+//Payment Routes
+Route::post('payment/{service}/post', 'PaymentController@postPayment');
+Route::get('payment/{service}/status', 'PaymentController@getPaymentStatus');
+Route::get('payment/{service}/cancel', 'PaymentController@getPaymentCancel');
+
+//Oauth Routes
 Route::post('service/login', function() {
     return response()->json(Authorizer::issueAccessToken());
 });
-
 Route::post('oauth/access_token', function() {
     return response()->json(Authorizer::issueAccessToken());
 });
