@@ -11,22 +11,35 @@
 |
 */
 
+use App\Product;
 use Illuminate\Support\Facades\Route;
 use LucaDegasperi\OAuth2Server\Facades\Authorizer;
 
+//You Have Arrived
 Route::get('/', function () {
     return view('welcome');
 });
 
+//Testing Routes
 Route::get('/test-oauth', function () {
     return view('test.integracaoOAuth');
 });
-
+Route::get('/test-payment', function () {
+    return view('test.payment');
+});
 
 //User Routes
 Route::get('user/info', ['middleware' => 'oauth', function(){
     return Authorizer::getResourceOwnerId();
 }]);
+
+//Products Routes
+Route::get('products/info', function(){
+    return response()->json(Product::all());
+});
+
+
+
 
 //Laravel Socialite Login, Data and Login Routes
 Route::get('service/{providerName}/login', 'ServiceAuthController@redirectToProvider');

@@ -34,6 +34,9 @@ class ServiceAuthController extends Controller
      */
     public function redirectToProvider($providerName)
     {
+        if($providerName == "facebook"){
+            return Socialite::driver($providerName)->with(['display' => 'popup'])->redirect();
+        }
         return Socialite::driver($providerName)->redirect();
     }
 

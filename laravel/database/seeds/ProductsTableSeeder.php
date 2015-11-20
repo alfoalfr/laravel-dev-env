@@ -1,6 +1,6 @@
 <?php
 
-use App\Products;
+use App\Product;
 use Illuminate\Database\Seeder;
 
 class ProductsTableSeeder extends Seeder
@@ -12,7 +12,7 @@ class ProductsTableSeeder extends Seeder
      */
     public function run()
     {
-        Products::truncate();
-        factory(Products::class, 10)->create();
+        Product::truncate();
+        factory(Product::class, 10)->create();
     }
 }

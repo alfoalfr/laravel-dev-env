@@ -16,6 +16,8 @@ use PayPal\Api\Transaction;
 use PayPal\Auth\OAuthTokenCredential;
 use PayPal\Exception\PayPalConnectionException;
 use PayPal\Rest\ApiContext;
+use stdClass;
+use Symfony\Component\VarDumper\Cloner\VarCloner;
 
 class PaymentPaypal implements PaymentInterface
 {
@@ -32,7 +34,9 @@ class PaymentPaypal implements PaymentInterface
 
     public function postPayment($request)
     {
-        $data = (object)$request->all();
+        $requestItems = $request->json('items');
+        $requestTransactionDescription = $request->json('transactionDescription');
+        $requestCallback = $request->json('callback');
 
         $payer = new Payer();
         $payer->setPaymentMethod('paypal');
@@ -40,9 +44,10 @@ class PaymentPaypal implements PaymentInterface
         $items = [];
         $totalPrice = 0;
 
-       foreach (json_decode($data->items) as $item){
+
+        foreach ($requestItems as $item){
             $item = (object)($item);
-            $savedProduct = Products::find($item->id);
+            $savedProduct = Product::find($item->id);
            if ($savedProduct !== null){
                $quantity = isset($item->quantity) === true ? $item->quantity : '1';
 
@@ -69,15 +74,15 @@ class PaymentPaypal implements PaymentInterface
         $transaction = new Transaction();
         $transaction->setAmount($amount)
             ->setItemList($item_list);
-        if (isset($data->transactionDescription) && $data->transactionDescription != null){
-            $transaction->setDescription($data->transactionDescription);
+        if (isset($requestTransactionDescription) && $requestTransactionDescription != null){
+            $transaction->setDescription($requestTransactionDescription);
         }else{
             $transaction->setDescription(config('payment.globalTransactionDescription', ''));
         }
 
         $redirect_urls = new RedirectUrls();
-        $redirect_urls->setReturnUrl(URL::action('PaymentController@getPaymentStatus', ['service', 'paypal'])) // Specify return URL
-        ->setCancelUrl(URL::action('PaymentController@getPaymentCancel', ['service', 'paypal']));
+        $redirect_urls->setReturnUrl(URL::action('PaymentController@getPaymentStatus', ['paypal']))
+        ->setCancelUrl(URL::action('PaymentController@getPaymentCancel', ['paypal']));
 
         $payment = new Payment();
         $payment->setIntent('Sale')
@@ -108,14 +113,18 @@ class PaymentPaypal implements PaymentInterface
 
         // add payment ID to session
         Session::put('paypal_payment_id', $payment->getId());
+        // add callback to the session
+        if (isset($requestCallback)){
+            Session::put('paymentCallback', $requestCallback);
+        }
 
         if(isset($redirect_url)) {
             // redirect to paypal
-            return redirect()->away($redirect_url);
+            return json_encode(["url" => $redirect_url]);
         }
 
         //TODO: error handling
-        return 'error';
+        return 'error blabalba';
     }
 
     public function getPaymentStatus($request)
@@ -124,6 +133,7 @@ class PaymentPaypal implements PaymentInterface
         $paymentId = Session::get('paypal_payment_id');
         $payerId = $request->get('PayerID');
         $token = $request->get('token');
+        $callback = Session::has('paymentCallback') ? Session::get('paymentCallback') : '';
 
         // clear the session payment ID
         Session::forget('paypal_payment_id');
@@ -145,19 +155,27 @@ class PaymentPaypal implements PaymentInterface
         //Execute the payment
         $result = $payment->execute($execution, $this->_api_context);
 
-        dd($result);
+        $result->paymentCallback = $callback;
 
         if ($result->getState() == 'approved') { // payment made
-            //TODO: success handling
-            return 'success - Payment success';
+            $result->success = true;
+        }else{
+            $result->success = false;
         }
-        //TODO: error handling
-        return 'error - Payment failed';
+
+        return view('payment.pay')->with([
+            "result" => $result
+        ]);
     }
 
     public function getPaymentCancel($request)
     {
-        //TODO: cancel handling
-        return 'success - Payment success';
+        $result = new stdClass();
+        $result->success = false;
+        $result->paymentCallback = Session::has('paymentCallback') ? Session::get('paymentCallback') : '';
+
+        return view('payment.pay')->with([
+            "result" => $result
+        ]);
     }
 }

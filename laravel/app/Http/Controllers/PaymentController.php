@@ -18,7 +18,7 @@ class PaymentController extends Controller
             return $serviceClass->postPayment(request());
         }
         //TODO: error handling
-        return 'error';
+        return 'error1';
     }
 
     public function getPaymentStatus($service)
@@ -29,7 +29,7 @@ class PaymentController extends Controller
             return $serviceClass->getPaymentStatus(request());
         }
         //TODO: error handling
-        return 'error';
+        return 'error2';
     }
 
     public function getPaymentCancel($service)
@@ -40,6 +40,6 @@ class PaymentController extends Controller
             return $serviceClass->getPaymentCancel(request());
         }
         //TODO: error handling
-        return 'cancel';
+        return 'cancel3';
     }
 }

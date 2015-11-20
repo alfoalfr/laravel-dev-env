@@ -11,7 +11,10 @@
 |
 */
 
-$factory->define(App\User::class, function (Faker\Generator $faker) {
+use App\Product;
+use App\User;
+
+$factory->define(User::class, function (Faker\Generator $faker) {
     return [
         'name' => $faker->name,
         'email' => $faker->email,
@@ -20,7 +23,7 @@ $factory->define(App\User::class, function (Faker\Generator $faker) {
     ];
 });
 
-$factory->define(App\Products::class, function (Faker\Generator $faker) {
+$factory->define(Product::class, function (Faker\Generator $faker) {
     return [
         'name' => $faker->colorName,
         'price' => $faker->randomFloat(2, 1, 100),
