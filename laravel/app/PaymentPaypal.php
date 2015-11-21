@@ -17,7 +17,6 @@ use PayPal\Auth\OAuthTokenCredential;
 use PayPal\Exception\PayPalConnectionException;
 use PayPal\Rest\ApiContext;
 use stdClass;
-use Symfony\Component\VarDumper\Cloner\VarCloner;
 
 class PaymentPaypal implements PaymentInterface
 {
@@ -93,15 +92,12 @@ class PaymentPaypal implements PaymentInterface
         try {
             $payment->create($this->_api_context);
         } catch (PayPalConnectionException $ex) {
-            //TODO: error handling
-            if (Config::get('app.debug')) {
-                echo "Exception: " . $ex->getMessage() . PHP_EOL;
-                $err_data = json_decode($ex->getData(), true);
-                dd($err_data);
-                exit;
-            } else {
-                die('Some error occur, sorry for inconvenient');
-            }
+            $result = new StdClass();
+            $result->success = false;
+            $result->message = 'internal-server-error';
+            return view('payment.pay')->with([
+                "result" => json_encode($result)
+            ]);
         }
 
         foreach($payment->getLinks() as $link) {
@@ -123,12 +119,18 @@ class PaymentPaypal implements PaymentInterface
             return json_encode(["url" => $redirect_url]);
         }
 
-        //TODO: error handling
-        return 'error blabalba';
+        $result = new StdClass();
+        $result->success = false;
+        $result->message = 'internal-server-error';
+        return view('payment.pay')->with([
+            "result" => json_encode($result)
+        ]);
     }
 
     public function getPaymentStatus($request)
     {
+        $result = new StdClass();
+
         // Get the payment ID before session clear
         $paymentId = Session::get('paypal_payment_id');
         $payerId = $request->get('PayerID');
@@ -139,8 +141,11 @@ class PaymentPaypal implements PaymentInterface
         Session::forget('paypal_payment_id');
 
         if (empty($payerId) || empty($token)) {
-            //TODO: error handling
-            return 'error - Payment failed';
+            $result->success = false;
+            $result->message = 'internal-server-error';
+            return view('payment.pay')->with([
+                "result" => json_encode($result)
+            ]);
         }
 
         $payment = Payment::get($paymentId, $this->_api_context);
@@ -171,11 +176,10 @@ class PaymentPaypal implements PaymentInterface
     public function getPaymentCancel($request)
     {
         $result = new stdClass();
-        $result->success = false;
-        $result->paymentCallback = Session::has('paymentCallback') ? Session::get('paymentCallback') : '';
+        $result->param = 'avoid-callback';
 
         return view('payment.pay')->with([
-            "result" => $result
+            "result" => json_encode($result)
         ]);
     }
 }

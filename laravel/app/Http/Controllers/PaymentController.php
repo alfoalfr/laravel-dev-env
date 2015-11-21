@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
+use stdClass;
 
 class PaymentController extends Controller
 {
@@ -17,8 +18,13 @@ class PaymentController extends Controller
             $serviceClass = new $serviceClassName();
             return $serviceClass->postPayment(request());
         }
-        //TODO: error handling
-        return 'error1';
+
+        $result = new StdClass();
+        $result->success = false;
+        $result->message = 'internal-server-error';
+        return view('payment.pay')->with([
+            "result" => json_encode($result)
+        ]);
     }
 
     public function getPaymentStatus($service)
@@ -28,8 +34,13 @@ class PaymentController extends Controller
             $serviceClass = new $serviceClassName();
             return $serviceClass->getPaymentStatus(request());
         }
-        //TODO: error handling
-        return 'error2';
+
+        $result = new StdClass();
+        $result->success = false;
+        $result->message = 'internal-server-error';
+        return view('payment.pay')->with([
+            "result" => json_encode($result)
+        ]);
     }
 
     public function getPaymentCancel($service)
@@ -39,7 +50,12 @@ class PaymentController extends Controller
             $serviceClass = new $serviceClassName();
             return $serviceClass->getPaymentCancel(request());
         }
-        //TODO: error handling
-        return 'cancel3';
+
+        $result = new StdClass();
+        $result->success = false;
+        $result->message = 'internal-server-error';
+        return view('payment.pay')->with([
+            "result" => json_encode($result)
+        ]);
     }
 }

@@ -26,6 +26,6 @@ $factory->define(User::class, function (Faker\Generator $faker) {
 $factory->define(Product::class, function (Faker\Generator $faker) {
     return [
         'name' => $faker->colorName,
-        'price' => $faker->randomFloat(2, 1, 100),
+        'price' => $faker->randomFloat(2, 0.01, 1),
     ];
 });

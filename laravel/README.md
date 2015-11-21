@@ -1,5 +1,5 @@
 # dev-env
-Dev Environment Setup Laravel5.1, Bower, oAuth2, Gulp, Angular, Bootstrap, Laravel Socialite
+Dev Environment Setup Laravel5.1, Bower, oAuth2, Gulp, Angular, Polymer, Laravel Socialite, Paypal
 
 
 #TODO:
@@ -10,7 +10,7 @@ Dev Environment Setup Laravel5.1, Bower, oAuth2, Gulp, Angular, Bootstrap, Larav
 
         *Certificado de segurança (https)
 
-        *Plataforma de pagamento com cartão (Paypal)
+        *Websocket
 
         *Video stream
             @http://www.laravel.io/forum/10-06-2014-streaming-video-files-with-laravel
@@ -24,18 +24,8 @@ Dev Environment Setup Laravel5.1, Bower, oAuth2, Gulp, Angular, Bootstrap, Larav
     +JS
         *Broserify
 
-        *Polymer
-
         *Polymer templates
             @https://polymerthemes.com/
-
-        *Websocket (chat e etc)
-            @https://laracasts.com/discuss/channels/tips/hoawebsocket-with-laravel-5-projects-push-notifications
-
-
-    +Node
-        *preparar node para integração com laravel
-
 
     +Servidor
         *preparar servidor do digital ocean (configuração)

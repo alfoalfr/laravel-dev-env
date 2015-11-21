@@ -83,7 +83,36 @@
             }]);
 
             function buyCallback(response){
-                console.log(response);
+                if (!response.hasOwnProperty('success') || response.success === null){
+                    if (response.hasOwnProperty('message')){
+                        switch (response.message){
+                            case 'window-closed':
+                                console.log('INFO: payment window closed');
+                                break;
+                            default:
+                        }
+                    }
+                }else if (response.success === true){
+                    console.log('SUCCESS: pagamento efetuado com sucesso!');
+                }else if (response.success === false){
+                    if (response.hasOwnProperty('message')) {
+                        switch (response.message) {
+                            case 'internal-server-error':
+                                console.log('ERROR: problema interno no servidor!');
+                                break;
+                            case 'popup-blocked':
+                                console.log('WARNING: habilite os popups no navegador efetuar o pagamento.');
+                                break;
+                            case 'window-closed':
+                                console.log('INFO: payment window closed');
+                                break;
+                            case 'ajax-error':
+                                console.log('ERROR: problemas na comunicação com o servidor!');
+                                break;
+                            default:
+                        }
+                    }
+                }
             }
         </script>
     </body>
